@@ -14,27 +14,45 @@ const TarotCard = ({ card }: { card: string }) => {
   const hAfterScaleDown = `h-[calc(600px/4.2)]`;
 
   return (
-    <div className={`card-container shadow-lg relative rounded-lg overflow-hidden ${wAfterScaleDown} ${hAfterScaleDown} `}>
+    <div
+      className={`card-container cursor-pointer shadow-lg relative rounded-lg overflow-hidden ${wAfterScaleDown} ${hAfterScaleDown}`}
+      style={{ perspective: "1000px" }} // Enables 3D flip effect
+    >
       <motion.div
-        whileTap={{ scale: 0.9 }}
-        transition={{ duration: 0.2 }}
-        onClick={() => setFlipped(false)}
-        className={`card ${flipped ? 'flipped' : ''} ${wAfterScaleDown} ${hAfterScaleDown}`}
+        onClick={() => setFlipped(!flipped)} // Toggle flip state
+        className={`inner-card ${wAfterScaleDown} ${hAfterScaleDown}`}
+        style={{
+          transformStyle: "preserve-3d",
+          transition: "transform 0.8s",
+          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)", // 3D flip
+        }}
       >
-        <div
-          className={`card-face card-front ${wAfterScaleDown} ${hAfterScaleDown}`}
-          style={{ backgroundImage: `url(${cardFront}) ` }}
-        ></div>
-        <div
-          className={`card-face card-back ${wAfterScaleDown} ${hAfterScaleDown}`}
-          style={{ backgroundImage: `url(${cardBack})` }}
-        ></div>
+        <motion.img
+          src={cardFront}
+          alt="Card Front"
+          className={`absolute ${wAfterScaleDown} ${hAfterScaleDown}`}
+          style={{
+            backfaceVisibility: "hidden",
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: flipped ? 0 : 1 }}
+        />
+
+        <motion.img
+          src={cardBack}
+          alt="Card Back"
+          className={`absolute ${wAfterScaleDown} ${hAfterScaleDown}`}
+          style={{
+            transform: "rotateY(180deg)",
+            backfaceVisibility: "hidden",
+          }}
+          initial={{ opacity: 1 }}
+          animate={{ opacity: flipped ? 1 : 0 }}
+        />
       </motion.div>
     </div>
   );
 };
-
-
 const Page = () => {
 
   const [cards, setCards] = useState<string[]>([])
